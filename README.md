@@ -1,2 +1,2 @@
-# ConvertGuideToJavaSwing
-An extensive guide to the Components, Layouts, Events, and Operations of the Java Swing library.
+# TheConvertsGuideToJavaSwing
+An interactive example guide to the Components, Layouts, Events, and Operations of the Java Swing library.
