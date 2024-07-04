@@ -1,0 +1,203 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
+ */
+package swingguide.helpers;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+/**
+ *
+ * @author Light
+ */
+public class EventButton extends javax.swing.JPanel {
+
+    int eventNumber = 0;
+    int digitCount = 0;
+    private String label = "";
+    private long length = 2000;
+    private long countStart = 0;
+    private final FontMetrics fm;
+    private final Timer timer;
+    
+    /**
+     * Creates new form EventLabel
+     */
+    public EventButton() {
+        initComponents();
+        JPanel panel = this;
+        timer = new Timer(25, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jLabel1.setBackground(backgroundColor());
+                jLabel1.setForeground(foregroundColor());
+                if(backgroundColor().getRGB() == Color.GREEN.getRGB()){
+                    timer.stop();
+                }
+            }
+        });
+        fm = getFontMetrics(jLabel1.getFont());
+        label = "Needs to Be Set";
+        setText(0);
+    }
+
+    public void eventFired(int eventNumber){
+        this.eventNumber = eventNumber;
+        if(eventNumber < 10){
+            digitCount = 1;
+        }else if(eventNumber < 100){
+            digitCount = 2;
+        }else{
+            digitCount = 3;
+        }
+        
+        setText(eventNumber);
+        
+        resetTimer();
+        jLabel1.revalidate();
+        timer.start();
+    }
+   
+    public void setButtonAction(AbstractAction action){
+        jLabel1.addMouseListener(new MouseAdapter() {
+            private Color origFG;
+            private Color origBG;
+            @Override
+            public void mousePressed(MouseEvent e) {
+                origBG = jLabel1.getBackground();
+                origFG = jLabel1.getForeground();
+                jLabel1.setBackground(Color.BLUE.darker());
+                jLabel1.setForeground(Color.WHITE);
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                jLabel1.setBackground(origBG);
+                jLabel1.setForeground(origFG);
+            }
+            
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                action.actionPerformed(null);
+                
+            }
+        });
+        label = (String)action.getValue(Action.NAME);
+        setText(eventNumber);
+    }
+            
+    public String getEventLabel(){
+            return label;
+    }
+    
+    public void drawLabel(Graphics2D g){
+        g.setColor(jLabel1.getBackground());
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Rectangle rect = jLabel1.getBounds();
+        g.fillRoundRect(0,0,rect.width-1,rect.height-1,20,20);
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(1.0f));
+        g.drawRoundRect(0,0,rect.width-1,rect.height-1,20,20);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        g.setColor(jLabel1.getForeground());
+        g.drawString(jLabel1.getText(), 15, 20);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    }
+    
+    private Color backgroundColor(){
+        Color color;
+        int delta  = (int)(System.currentTimeMillis() - countStart);
+            
+        int colorNum = 0;
+
+        if (delta < length) {
+            colorNum = 255 - (delta * 255) / ((int) length);
+        }
+
+        if (countStart > 0) {
+            color = new Color(colorNum, 255, colorNum);
+        } else {
+            color = new Color(0, 0, 0);
+        }
+        return color;
+    }
+    
+    private Color foregroundColor(){
+        if(eventNumber > 0) {
+            return Color.BLACK;
+        } else {
+            return Color.WHITE;
+        }
+    }
+    
+    public void resetTimer(){
+        countStart = System.currentTimeMillis();
+    } 
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel(){
+            @Override
+            public void paintComponent(Graphics g){
+                drawLabel((Graphics2D)g);
+            }
+        };
+
+        jLabel1.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("jLabel1");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel1)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel1)
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    // End of variables declaration//GEN-END:variables
+
+    private void setText(int eventNumber) {
+        String newLabel = label;
+        if(eventNumber > 0){
+            newLabel = eventNumber+"   "+label;
+        }
+        jLabel1.setText(newLabel);
+        Dimension dim = new Dimension(fm.stringWidth(newLabel)+30, 30);
+        jLabel1.setPreferredSize(dim);
+        jLabel1.setMinimumSize(dim);
+        jLabel1.getParent().revalidate();
+    }
+}
